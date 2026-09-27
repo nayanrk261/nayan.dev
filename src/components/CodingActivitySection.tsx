@@ -267,19 +267,69 @@ export default function CodingActivitySection({ darkMode }: { darkMode?: boolean
   // Active Tooltip
   const [tooltip, setTooltip] = useState<TooltipState>({ visible: false, content: "", x: 0, y: 0 });
 
-  // 1. Fetch GitHub Contributions ONCE on mount
+  // 1. Fetch GitHub Contributions ONCE on mount (Real-time live multi-provider)
   useEffect(() => {
     let isMounted = true;
 
     async function fetchGitHub() {
       setGhLoading(true);
       setGhError(false);
+
+      // Provider 1: Instant real-time uncached provider
+      try {
+        const response = await fetch("https://github-contributions.vercel.app/api/v1/nayanrk261");
+        if (response.ok) {
+          const data = await response.json();
+          if (data && Array.isArray(data.contributions) && isMounted) {
+            const today = new Date();
+            const dateMap = new Map<string, GitHubContributionDay>();
+
+            data.contributions.forEach((c: any) => {
+              const level = Math.min(4, Math.max(0, parseInt(c.intensity || "0", 10))) as 0 | 1 | 2 | 3 | 4;
+              const count = typeof c.count === "number" && c.count > 0 ? c.count : (level > 0 ? level : 0);
+              dateMap.set(c.date, { date: c.date, count, level });
+            });
+
+            const daysList: GitHubContributionDay[] = [];
+            for (let i = 363; i >= 0; i--) {
+              const d = new Date(today);
+              d.setDate(d.getDate() - i);
+              const year = d.getFullYear();
+              const month = String(d.getMonth() + 1).padStart(2, "0");
+              const day = String(d.getDate()).padStart(2, "0");
+              const dateStr = `${year}-${month}-${day}`;
+
+              if (dateMap.has(dateStr)) {
+                daysList.push(dateMap.get(dateStr)!);
+              } else {
+                daysList.push({ date: dateStr, count: 0, level: 0 });
+              }
+            }
+
+            const currentYearStr = String(today.getFullYear());
+            const yearObj = data.years?.find((y: any) => String(y.year) === currentYearStr);
+            const totalLastYear = yearObj?.total || daysList.reduce((acc, curr) => acc + curr.count, 0);
+
+            setGhData({
+              total: { lastYear: totalLastYear },
+              contributions: daysList,
+            });
+            setGhLoading(false);
+            return;
+          }
+        }
+      } catch {}
+
+      // Provider 2: Backup provider
       try {
         const response = await fetch("https://github-contributions-api.jogruber.de/v4/nayanrk261?y=last");
-        if (!response.ok) throw new Error(`GitHub API HTTP ${response.status}`);
-        const data: GitHubApiResponse = await response.json();
-        if (isMounted) {
-          setGhData(data);
+        if (response.ok) {
+          const data: GitHubApiResponse = await response.json();
+          if (isMounted) {
+            setGhData(data);
+          }
+        } else {
+          if (isMounted) setGhError(true);
         }
       } catch (err) {
         console.warn("GitHub contributions fetch failed:", err);
@@ -293,14 +343,37 @@ export default function CodingActivitySection({ darkMode }: { darkMode?: boolean
     return () => { isMounted = false; };
   }, []);
 
-  // 2. Async Live Background Sync for LeetCode Stats
+  // 2. Async Live Background Sync for LeetCode Stats (Primary + Fallback APIs)
   useEffect(() => {
     let isMounted = true;
 
     async function fetchLeetCode() {
+      const applyData = (data: any) => {
+        if (!isMounted || !data) return;
+        if (typeof data.totalSolved === "number") {
+          setLcData({
+            totalSolved: data.totalSolved,
+            easySolved: data.easySolved ?? 36,
+            mediumSolved: data.mediumSolved ?? 45,
+            hardSolved: data.hardSolved ?? 4,
+          });
+        }
+        const rawCal = data.submissionCalendar;
+        let rawCalendarObj: Record<string, number> = {};
+        if (typeof rawCal === "string") {
+          try { rawCalendarObj = JSON.parse(rawCal); } catch {}
+        } else if (rawCal && typeof rawCal === "object") {
+          rawCalendarObj = rawCal;
+        }
+
+        if (Object.keys(rawCalendarObj).length > 0) {
+          setLcHeatmap(build364DaysHeatmap(rawCalendarObj));
+        }
+      };
+
       try {
         const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 3500);
+        const timeoutId = setTimeout(() => controller.abort(), 6000);
         const response = await fetch("https://leetcode-api-faisalshohag.vercel.app/nayank_2616", {
           signal: controller.signal,
         });
@@ -308,31 +381,19 @@ export default function CodingActivitySection({ darkMode }: { darkMode?: boolean
 
         if (response.ok) {
           const data = await response.json();
-          if (data && isMounted) {
-            if (typeof data.totalSolved === "number") {
-              setLcData({
-                totalSolved: data.totalSolved,
-                easySolved: data.easySolved || 36,
-                mediumSolved: data.mediumSolved || 45,
-                hardSolved: data.hardSolved || 4,
-              });
-            }
-            const rawCal = data.submissionCalendar;
-            let rawCalendarObj: Record<string, number> = {};
-            if (typeof rawCal === "string") {
-              try { rawCalendarObj = JSON.parse(rawCal); } catch {}
-            } else if (rawCal && typeof rawCal === "object") {
-              rawCalendarObj = rawCal;
-            }
-
-            if (Object.keys(rawCalendarObj).length > 0) {
-              setLcHeatmap(build364DaysHeatmap(rawCalendarObj));
-            }
-          }
+          applyData(data);
+          return;
         }
-      } catch {
-        // Keeps real cached stats & 124 submission days if network request is blocked
-      }
+      } catch {}
+
+      // Fallback API if primary is slow or blocked
+      try {
+        const fallbackRes = await fetch("https://alfa-leetcode-api.onrender.com/userProfile/nayank_2616");
+        if (fallbackRes.ok) {
+          const data = await fallbackRes.json();
+          applyData(data);
+        }
+      } catch {}
     }
 
     fetchLeetCode();
