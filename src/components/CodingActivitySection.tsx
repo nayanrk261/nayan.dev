@@ -69,6 +69,124 @@ const REAL_LEETCODE_CALENDAR: Record<string, number> = {
   "1790121600": 1, "1790208000": 2, "1790294400": 1, "1790380800": 1
 };
 
+/* Real GitHub active contribution days for @nayanrk261 */
+const REAL_GITHUB_ACTIVE_DAYS: Record<string, { count: number; level: 0 | 1 | 2 | 3 | 4 }> = {
+  "2026-01-14": { count: 3, level: 2 },
+  "2026-02-03": { count: 1, level: 1 },
+  "2026-02-04": { count: 1, level: 1 },
+  "2026-02-14": { count: 1, level: 1 },
+  "2026-02-24": { count: 1, level: 1 },
+  "2026-03-20": { count: 1, level: 1 },
+  "2026-04-10": { count: 1, level: 1 },
+  "2026-05-02": { count: 1, level: 1 },
+  "2026-05-19": { count: 1, level: 1 },
+  "2026-05-22": { count: 1, level: 1 },
+  "2026-05-25": { count: 1, level: 1 },
+  "2026-05-26": { count: 1, level: 1 },
+  "2026-05-28": { count: 2, level: 1 },
+  "2026-05-30": { count: 1, level: 1 },
+  "2026-06-01": { count: 4, level: 2 },
+  "2026-06-03": { count: 1, level: 1 },
+  "2026-06-05": { count: 1, level: 1 },
+  "2026-06-06": { count: 3, level: 2 },
+  "2026-06-07": { count: 6, level: 3 },
+  "2026-06-09": { count: 4, level: 2 },
+  "2026-06-10": { count: 2, level: 1 },
+  "2026-06-15": { count: 2, level: 1 },
+  "2026-06-17": { count: 1, level: 1 },
+  "2026-06-18": { count: 10, level: 4 },
+  "2026-06-19": { count: 2, level: 1 },
+  "2026-06-20": { count: 5, level: 2 },
+  "2026-07-08": { count: 3, level: 2 },
+  "2026-07-09": { count: 8, level: 3 },
+  "2026-07-11": { count: 2, level: 1 },
+  "2026-07-13": { count: 4, level: 2 },
+  "2026-07-14": { count: 7, level: 3 },
+  "2026-07-16": { count: 7, level: 3 },
+  "2026-07-17": { count: 3, level: 2 },
+  "2026-07-18": { count: 1, level: 1 },
+  "2026-07-20": { count: 1, level: 1 },
+  "2026-07-24": { count: 3, level: 2 },
+  "2026-07-25": { count: 1, level: 1 },
+  "2026-07-26": { count: 1, level: 1 },
+  "2026-07-27": { count: 2, level: 1 },
+  "2026-07-28": { count: 4, level: 2 },
+  "2026-07-29": { count: 2, level: 1 },
+  "2026-07-30": { count: 2, level: 1 },
+  "2026-07-31": { count: 1, level: 1 },
+  "2026-08-01": { count: 3, level: 2 },
+  "2026-08-02": { count: 4, level: 2 },
+  "2026-08-03": { count: 1, level: 1 },
+  "2026-08-04": { count: 1, level: 1 },
+  "2026-08-05": { count: 1, level: 1 },
+  "2026-08-06": { count: 1, level: 1 },
+  "2026-08-07": { count: 1, level: 1 },
+  "2026-08-08": { count: 1, level: 1 },
+  "2026-08-09": { count: 3, level: 2 },
+  "2026-08-10": { count: 1, level: 1 },
+  "2026-08-12": { count: 1, level: 1 },
+  "2026-08-17": { count: 5, level: 2 },
+  "2026-08-18": { count: 3, level: 2 },
+  "2026-08-19": { count: 3, level: 2 },
+  "2026-08-20": { count: 4, level: 2 },
+  "2026-08-21": { count: 1, level: 1 },
+  "2026-08-22": { count: 10, level: 4 },
+  "2026-08-23": { count: 8, level: 3 },
+  "2026-08-24": { count: 4, level: 2 },
+  "2026-08-26": { count: 5, level: 2 },
+  "2026-08-29": { count: 11, level: 4 },
+  "2026-08-30": { count: 11, level: 4 },
+  "2026-08-31": { count: 1, level: 1 },
+  "2026-09-01": { count: 7, level: 3 },
+  "2026-09-02": { count: 1, level: 1 },
+  "2026-09-03": { count: 1, level: 1 },
+  "2026-09-05": { count: 3, level: 2 },
+  "2026-09-07": { count: 2, level: 1 },
+  "2026-09-08": { count: 2, level: 1 },
+  "2026-09-09": { count: 3, level: 2 },
+  "2026-09-10": { count: 1, level: 1 },
+  "2026-09-11": { count: 7, level: 3 },
+  "2026-09-12": { count: 3, level: 2 },
+  "2026-09-15": { count: 1, level: 1 },
+  "2026-09-16": { count: 1, level: 1 },
+  "2026-09-17": { count: 2, level: 1 },
+  "2026-09-18": { count: 1, level: 1 },
+  "2026-09-19": { count: 1, level: 1 },
+  "2026-09-20": { count: 4, level: 2 },
+  "2026-09-21": { count: 1, level: 1 },
+  "2026-09-22": { count: 3, level: 2 },
+  "2026-09-23": { count: 2, level: 1 },
+  "2026-09-25": { count: 2, level: 1 },
+  "2026-09-26": { count: 1, level: 1 },
+  "2026-09-27": { count: 1, level: 1 },
+};
+
+/* Helper to build 364 days array for GitHub from active days object */
+function build364DaysGitHubHeatmap(
+  activeDaysObj: Record<string, { count: number; level: 0 | 1 | 2 | 3 | 4 }> = REAL_GITHUB_ACTIVE_DAYS
+): GitHubContributionDay[] {
+  const today = new Date();
+  const daysList: GitHubContributionDay[] = [];
+
+  for (let i = 363; i >= 0; i--) {
+    const d = new Date(today);
+    d.setDate(d.getDate() - i);
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, "0");
+    const day = String(d.getDate()).padStart(2, "0");
+    const dateStr = `${year}-${month}-${day}`;
+
+    const activeEntry = activeDaysObj[dateStr];
+    if (activeEntry) {
+      daysList.push({ date: dateStr, count: activeEntry.count, level: activeEntry.level });
+    } else {
+      daysList.push({ date: dateStr, count: 0, level: 0 });
+    }
+  }
+
+  return daysList;
+}
+
 /* Helper to parse YYYY-MM-DD date safely in local time */
 function parseLocalDate(dateStr: string): Date {
   const parts = dateStr.split("-");
@@ -250,10 +368,17 @@ function ContributionHeatmap({
 }
 
 export default function CodingActivitySection({ darkMode }: { darkMode?: boolean }) {
-  // GitHub state
-  const [ghData, setGhData] = useState<GitHubApiResponse | null>(null);
-  const [ghLoading, setGhLoading] = useState<boolean>(true);
-  const [ghError, setGhError] = useState<boolean>(false);
+  const initialGhList = useMemo(() => build364DaysGitHubHeatmap(REAL_GITHUB_ACTIVE_DAYS), []);
+  const initialGhTotal = useMemo(
+    () => initialGhList.reduce((acc, curr) => acc + curr.count, 0),
+    [initialGhList]
+  );
+
+  // GitHub state initialized immediately with real 364 days dataset (0ms loading!)
+  const [ghData, setGhData] = useState<GitHubApiResponse>({
+    total: { lastYear: 245 },
+    contributions: initialGhList,
+  });
 
   // LeetCode state - Pre-populated with real LeetCode stats & 124 real submission dates
   const [lcData, setLcData] = useState<LeetCodeApiResponse>({
@@ -267,15 +392,29 @@ export default function CodingActivitySection({ darkMode }: { darkMode?: boolean
   // Active Tooltip
   const [tooltip, setTooltip] = useState<TooltipState>({ visible: false, content: "", x: 0, y: 0 });
 
-  // 1. Fetch GitHub Contributions ONCE on mount (Real-time live multi-provider)
+  // 1. Daily / Nightly Background Sync for GitHub Contributions
   useEffect(() => {
     let isMounted = true;
 
-    async function fetchGitHub() {
-      setGhLoading(true);
-      setGhError(false);
+    async function syncGitHubDaily() {
+      const todayStr = new Date().toISOString().split("T")[0];
+      const lastSync = localStorage.getItem("gh_last_sync_date");
 
-      // Provider 1: Instant real-time uncached provider
+      // Check if already synced today
+      if (lastSync === todayStr) {
+        const cachedStr = localStorage.getItem("gh_cached_data_nayanrk261");
+        if (cachedStr) {
+          try {
+            const cachedData = JSON.parse(cachedStr);
+            if (cachedData && cachedData.contributions?.length && isMounted) {
+              setGhData(cachedData);
+              return;
+            }
+          } catch {}
+        }
+      }
+
+      // Sync latest nightly GitHub contribution update
       try {
         const response = await fetch("https://github-contributions.vercel.app/api/v1/nayanrk261");
         if (response.ok) {
@@ -310,36 +449,20 @@ export default function CodingActivitySection({ darkMode }: { darkMode?: boolean
             const yearObj = data.years?.find((y: any) => String(y.year) === currentYearStr);
             const totalLastYear = yearObj?.total || daysList.reduce((acc, curr) => acc + curr.count, 0);
 
-            setGhData({
+            const newGhData = {
               total: { lastYear: totalLastYear },
               contributions: daysList,
-            });
-            setGhLoading(false);
-            return;
+            };
+
+            setGhData(newGhData);
+            localStorage.setItem("gh_last_sync_date", todayStr);
+            localStorage.setItem("gh_cached_data_nayanrk261", JSON.stringify(newGhData));
           }
         }
       } catch {}
-
-      // Provider 2: Backup provider
-      try {
-        const response = await fetch("https://github-contributions-api.jogruber.de/v4/nayanrk261?y=last");
-        if (response.ok) {
-          const data: GitHubApiResponse = await response.json();
-          if (isMounted) {
-            setGhData(data);
-          }
-        } else {
-          if (isMounted) setGhError(true);
-        }
-      } catch (err) {
-        console.warn("GitHub contributions fetch failed:", err);
-        if (isMounted) setGhError(true);
-      } finally {
-        if (isMounted) setGhLoading(false);
-      }
     }
 
-    fetchGitHub();
+    syncGitHubDaily();
     return () => { isMounted = false; };
   }, []);
 
@@ -494,26 +617,12 @@ export default function CodingActivitySection({ darkMode }: { darkMode?: boolean
               </div>
 
               {/* GitHub Heatmap Grid */}
-              {ghLoading ? (
-                <div className="h-44 rounded-xl bg-white/[0.02] border border-white/5 flex flex-col items-center justify-center gap-2">
-                  <RefreshCw className="w-5 h-5 text-emerald-400 animate-spin" />
-                  <span className="mono text-xs text-stone-400">Fetching GitHub contributions...</span>
-                </div>
-              ) : ghError || !ghData?.contributions?.length ? (
-                <div className="rounded-xl p-4 bg-stone-950/80 border border-white/5 text-center">
-                  <div className="flex items-center justify-center gap-2 text-stone-400 mono text-xs mb-3">
-                    <AlertCircle className="w-4 h-4 text-amber-400" />
-                    <span>Unable to load live GitHub data directly.</span>
-                  </div>
-                </div>
-              ) : (
-                <ContributionHeatmap
-                  daysList={ghData.contributions}
-                  onMouseEnter={handleMouseEnter}
-                  onMouseLeave={handleMouseLeave}
-                  formatDate={formatDate}
-                />
-              )}
+              <ContributionHeatmap
+                daysList={ghData.contributions}
+                onMouseEnter={handleMouseEnter}
+                onMouseLeave={handleMouseLeave}
+                formatDate={formatDate}
+              />
             </div>
           </div>
 
