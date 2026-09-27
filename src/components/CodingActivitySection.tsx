@@ -569,8 +569,8 @@ export default function CodingActivitySection({ darkMode }: { darkMode?: boolean
         {/* Section Header */}
         <div className="reveal mb-12 flex flex-col md:flex-row md:items-end md:justify-between gap-4">
           <div>
-            <span className="mono text-[11px] uppercase tracking-[0.2em] text-emerald-400">
-              02 — open source & problem solving
+            <span className="mono text-[11px] uppercase tracking-[0.22em] text-orange-400 font-semibold">
+              02 — OPEN SOURCE & PROBLEM SOLVING
             </span>
             <h2 className="mt-2 text-4xl md:text-5xl font-extrabold text-white tracking-tight">
               Coding <span className="serif font-normal opacity-70">Activity & Stats</span>

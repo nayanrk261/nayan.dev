@@ -442,8 +442,8 @@ function StackMatrix({ darkMode }: StackMatrixProps) {
       <div className="max-w-6xl mx-auto relative z-10">
         <div className="reveal mb-12 flex flex-col md:flex-row md:items-end md:justify-between gap-4">
           <div>
-            <span className="mono text-[11px] uppercase tracking-[0.2em] text-orange-400">
-              01 — toolkit
+            <span className="mono text-[11px] uppercase tracking-[0.22em] text-orange-400 font-semibold">
+              01 — TOOLKIT
             </span>
             <h2 className="mt-2 text-4xl md:text-5xl font-extrabold tracking-tight text-white">
               The Stack <span className="serif font-normal opacity-70">Matrix</span>
