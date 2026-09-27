@@ -277,7 +277,7 @@ function Hero({ darkMode, socials, onEmailClick }: HeroProps) {
         </div>
 
         <p className="mono text-xs sm:text-sm uppercase tracking-widest mb-3 fade-up fade-up-2 text-stone-400 font-medium">
-          Hi, I'm Nayan —
+          Hi, I'm Nayan Khandelwal —
         </p>
 
         <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-extrabold leading-[1.03] tracking-tight mb-6 fade-up fade-up-2">
