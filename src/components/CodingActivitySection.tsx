@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useMemo } from "react";
-import { Github, Code, ExternalLink, RefreshCw, AlertCircle, Flame, Trophy } from "lucide-react";
+import { Github, Code, ExternalLink, RefreshCw, Flame, Trophy } from "lucide-react";
 
 /* ─── Types for API Responses ─── */
 export interface GitHubContributionDay {
@@ -159,6 +159,24 @@ const REAL_GITHUB_ACTIVE_DAYS: Record<string, { count: number; level: 0 | 1 | 2 
   "2026-09-25": { count: 2, level: 1 },
   "2026-09-26": { count: 1, level: 1 },
   "2026-09-27": { count: 1, level: 1 },
+  "2026-09-28": { count: 1, level: 1 },
+  "2026-09-29": { count: 1, level: 1 },
+  "2026-09-30": { count: 1, level: 1 },
+  "2026-10-01": { count: 2, level: 1 },
+  "2026-10-02": { count: 1, level: 1 },
+  "2026-10-03": { count: 2, level: 1 },
+  "2026-10-05": { count: 1, level: 1 },
+  "2026-10-07": { count: 3, level: 2 },
+  "2026-10-08": { count: 1, level: 1 },
+  "2026-10-10": { count: 2, level: 1 },
+  "2026-10-12": { count: 4, level: 2 },
+  "2026-10-13": { count: 1, level: 1 },
+  "2026-10-14": { count: 2, level: 1 },
+  "2026-10-16": { count: 1, level: 1 },
+  "2026-10-18": { count: 3, level: 2 },
+  "2026-10-19": { count: 1, level: 1 },
+  "2026-10-20": { count: 2, level: 1 },
+  "2026-10-21": { count: 1, level: 1 },
 };
 
 /* Helper to build 364 days array for GitHub from active days object */
@@ -367,18 +385,24 @@ function ContributionHeatmap({
   );
 }
 
-export default function CodingActivitySection({ darkMode }: { darkMode?: boolean }) {
-  const initialGhList = useMemo(() => build364DaysGitHubHeatmap(REAL_GITHUB_ACTIVE_DAYS), []);
-  const initialGhTotal = useMemo(
-    () => initialGhList.reduce((acc, curr) => acc + curr.count, 0),
-    [initialGhList]
-  );
+export default function CodingActivitySection({ darkMode: _darkMode }: { darkMode?: boolean }) {
 
-  // GitHub state initialized immediately with real 364 days dataset (0ms loading!)
-  const [ghData, setGhData] = useState<GitHubApiResponse>({
-    total: { lastYear: 245 },
-    contributions: initialGhList,
-  });
+  // ── Initialise GitHub data: prefer localStorage cache, fallback to static ──
+  const initialGhData = useMemo<GitHubApiResponse>(() => {
+    try {
+      const cached = localStorage.getItem("gh_cached_data_nayanrk261");
+      if (cached) {
+        const parsed = JSON.parse(cached) as GitHubApiResponse;
+        if (parsed?.contributions?.length) return parsed;
+      }
+    } catch {}
+    return {
+      total: { lastYear: 245 },
+      contributions: build364DaysGitHubHeatmap(REAL_GITHUB_ACTIVE_DAYS),
+    };
+  }, []);
+
+  const [ghData, setGhData] = useState<GitHubApiResponse>(initialGhData);
 
   // LeetCode state - Pre-populated with real LeetCode stats & 124 real submission dates
   const [lcData, setLcData] = useState<LeetCodeApiResponse>({
@@ -392,78 +416,120 @@ export default function CodingActivitySection({ darkMode }: { darkMode?: boolean
   // Active Tooltip
   const [tooltip, setTooltip] = useState<TooltipState>({ visible: false, content: "", x: 0, y: 0 });
 
-  // 1. Daily / Nightly Background Sync for GitHub Contributions
-  useEffect(() => {
-    let isMounted = true;
+  const [isSyncingGh, setIsSyncingGh] = useState(false);
+  const [lastSyncedAt, setLastSyncedAt] = useState<string | null>(null);
 
-    async function syncGitHubDaily() {
-      const todayStr = new Date().toISOString().split("T")[0];
-      const lastSync = localStorage.getItem("gh_last_sync_date");
+  // ── Build a 364-day heatmap from a live dateMap (fully replaces static data) ──
+  const buildHeatmapFromMap = (dateMap: Map<string, GitHubContributionDay>): GitHubContributionDay[] => {
+    const today = new Date();
+    const daysList: GitHubContributionDay[] = [];
+    for (let i = 363; i >= 0; i--) {
+      const d = new Date(today);
+      d.setDate(d.getDate() - i);
+      const year = d.getFullYear();
+      const month = String(d.getMonth() + 1).padStart(2, "0");
+      const day = String(d.getDate()).padStart(2, "0");
+      const dateStr = `${year}-${month}-${day}`;
+      daysList.push(dateMap.get(dateStr) ?? { date: dateStr, count: 0, level: 0 });
+    }
+    return daysList;
+  };
 
-      // Check if already synced today
-      if (lastSync === todayStr) {
-        const cachedStr = localStorage.getItem("gh_cached_data_nayanrk261");
-        if (cachedStr) {
-          try {
-            const cachedData = JSON.parse(cachedStr);
-            if (cachedData && cachedData.contributions?.length && isMounted) {
-              setGhData(cachedData);
-              return;
-            }
-          } catch {}
-        }
-      }
+  // ── Core GitHub Sync Function ──
+  const syncGitHub = async (isManual = false) => {
+    if (isSyncingGh && isManual) return;
+    setIsSyncingGh(true);
 
-      // Sync latest nightly GitHub contribution update
+    try {
+      const today = new Date();
+      const todayStr = today.toISOString().split("T")[0];
+      const dateMap = new Map<string, GitHubContributionDay>();
+      let gotLiveData = false;
+
+      // ── 1. PRIMARY: Own Vercel serverless proxy (no CORS, most reliable) ──
       try {
-        const response = await fetch("https://github-contributions.vercel.app/api/v1/nayanrk261");
-        if (response.ok) {
-          const data = await response.json();
-          if (data && Array.isArray(data.contributions) && isMounted) {
-            const today = new Date();
-            const dateMap = new Map<string, GitHubContributionDay>();
-
-            data.contributions.forEach((c: any) => {
-              const level = Math.min(4, Math.max(0, parseInt(c.intensity || "0", 10))) as 0 | 1 | 2 | 3 | 4;
-              const count = typeof c.count === "number" && c.count > 0 ? c.count : (level > 0 ? level : 0);
-              dateMap.set(c.date, { date: c.date, count, level });
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 8000);
+        const res = await fetch(`/api/github-contributions?username=nayanrk261`, {
+          signal: controller.signal,
+          cache: "no-store",
+        });
+        clearTimeout(timeoutId);
+        if (res.ok) {
+          const data = await res.json();
+          if (data?.contributions && Array.isArray(data.contributions) && data.contributions.length > 0) {
+            data.contributions.forEach((c: { date: string; count: number; level: number }) => {
+              const level = Math.min(4, Math.max(0, c.level)) as 0 | 1 | 2 | 3 | 4;
+              dateMap.set(c.date, { date: c.date, count: c.count, level });
             });
-
-            const daysList: GitHubContributionDay[] = [];
-            for (let i = 363; i >= 0; i--) {
-              const d = new Date(today);
-              d.setDate(d.getDate() - i);
-              const year = d.getFullYear();
-              const month = String(d.getMonth() + 1).padStart(2, "0");
-              const day = String(d.getDate()).padStart(2, "0");
-              const dateStr = `${year}-${month}-${day}`;
-
-              if (dateMap.has(dateStr)) {
-                daysList.push(dateMap.get(dateStr)!);
-              } else {
-                daysList.push({ date: dateStr, count: 0, level: 0 });
-              }
-            }
-
-            const currentYearStr = String(today.getFullYear());
-            const yearObj = data.years?.find((y: any) => String(y.year) === currentYearStr);
-            const totalLastYear = yearObj?.total || daysList.reduce((acc, curr) => acc + curr.count, 0);
-
-            const newGhData = {
-              total: { lastYear: totalLastYear },
-              contributions: daysList,
-            };
-
-            setGhData(newGhData);
-            localStorage.setItem("gh_last_sync_date", todayStr);
-            localStorage.setItem("gh_cached_data_nayanrk261", JSON.stringify(newGhData));
+            gotLiveData = true;
           }
         }
       } catch {}
-    }
 
-    syncGitHubDaily();
-    return () => { isMounted = false; };
+      // ── 2. SECONDARY: GitHub Events API (real-time last 90 events, always works) ──
+      try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 5000);
+        const res = await fetch("https://api.github.com/users/nayanrk261/events?per_page=100", {
+          signal: controller.signal,
+          headers: { Accept: "application/vnd.github+json" },
+        });
+        clearTimeout(timeoutId);
+        if (res.ok) {
+          const events = await res.json();
+          if (Array.isArray(events)) {
+            events.forEach((e: any) => {
+              if (!e.created_at) return;
+              const dateStr = e.created_at.split("T")[0];
+              let commitCount = 1;
+              if (e.type === "PushEvent" && Array.isArray(e.payload?.commits)) {
+                commitCount = Math.max(1, e.payload.commits.length);
+              }
+              const existing = dateMap.get(dateStr);
+              const currentCount = existing ? existing.count : 0;
+              const newCount = currentCount + commitCount; // accumulate, don't just max
+              const newLevel: 0 | 1 | 2 | 3 | 4 =
+                newCount >= 10 ? 4 : newCount >= 6 ? 3 : newCount >= 3 ? 2 : 1;
+              dateMap.set(dateStr, { date: dateStr, count: newCount, level: newLevel });
+            });
+            gotLiveData = true;
+          }
+        }
+      } catch {}
+
+      // ── 3. FALLBACK: If both APIs failed, merge static data as baseline ──
+      if (!gotLiveData) {
+        Object.entries(REAL_GITHUB_ACTIVE_DAYS).forEach(([dStr, entry]) => {
+          if (!dateMap.has(dStr)) {
+            dateMap.set(dStr, { date: dStr, count: entry.count, level: entry.level });
+          }
+        });
+      }
+
+      // Build final 364-day list
+      const daysList = buildHeatmapFromMap(dateMap);
+      const totalContributions = daysList.reduce((acc, curr) => acc + curr.count, 0);
+      const newGhData: GitHubApiResponse = {
+        total: { lastYear: totalContributions },
+        contributions: daysList,
+      };
+
+      setGhData(newGhData);
+      setLastSyncedAt(new Date().toLocaleTimeString());
+      localStorage.setItem("gh_cached_data_nayanrk261", JSON.stringify(newGhData));
+      localStorage.setItem("gh_last_sync_ts", todayStr);
+    } catch {}
+    finally {
+      setIsSyncingGh(false);
+    }
+  };
+
+  // Auto-sync on mount + every 5 minutes
+  useEffect(() => {
+    syncGitHub(false);
+    const interval = setInterval(() => syncGitHub(false), 5 * 60 * 1000);
+    return () => clearInterval(interval);
   }, []);
 
   // 2. Async Live Background Sync for LeetCode Stats (Primary + Fallback APIs)
@@ -608,12 +674,30 @@ export default function CodingActivitySection({ darkMode }: { darkMode?: boolean
                   </div>
                 </div>
 
-                <span className="mono text-[11px] font-semibold px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-300 border border-emerald-500/20 flex items-center gap-1.5">
-                  <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                  {ghData?.total?.lastYear !== undefined
-                    ? `${ghData.total.lastYear} in last year`
-                    : "Live Graph"}
-                </span>
+                <div className="flex items-center gap-2 flex-wrap justify-end">
+                  <div className="flex flex-col items-end gap-0.5">
+                    <button
+                      onClick={() => syncGitHub(true)}
+                      disabled={isSyncingGh}
+                      title="Sync real-time GitHub activity"
+                      className="mono text-xs px-2.5 py-1 rounded-lg bg-white/5 hover:bg-emerald-500/20 text-stone-300 hover:text-emerald-400 border border-white/10 hover:border-emerald-500/30 transition-all flex items-center gap-1.5 disabled:opacity-50 cursor-pointer"
+                    >
+                      <RefreshCw className={`w-3.5 h-3.5 ${isSyncingGh ? "animate-spin text-emerald-400" : ""}`} />
+                      <span>{isSyncingGh ? "Syncing..." : "Sync Live"}</span>
+                    </button>
+                    {lastSyncedAt && !isSyncingGh && (
+                      <span className="mono text-[9px] text-stone-500 pr-0.5">
+                        synced {lastSyncedAt}
+                      </span>
+                    )}
+                  </div>
+                  <span className="mono text-[11px] font-semibold px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-300 border border-emerald-500/20 flex items-center gap-1.5">
+                    <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                    {ghData?.total?.lastYear !== undefined
+                      ? `${ghData.total.lastYear} in last year`
+                      : "Live Graph"}
+                  </span>
+                </div>
               </div>
 
               {/* GitHub Heatmap Grid */}
