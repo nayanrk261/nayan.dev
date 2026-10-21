@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useMemo } from "react";
-import { Github, Code, ExternalLink, RefreshCw, Flame, Trophy } from "lucide-react";
+import { Github, Code, ExternalLink, Flame, Trophy } from "lucide-react";
 
 /* ─── Types for API Responses ─── */
 export interface GitHubContributionDay {
@@ -417,7 +417,6 @@ export default function CodingActivitySection({ darkMode: _darkMode }: { darkMod
   const [tooltip, setTooltip] = useState<TooltipState>({ visible: false, content: "", x: 0, y: 0 });
 
   const [isSyncingGh, setIsSyncingGh] = useState(false);
-  const [lastSyncedAt, setLastSyncedAt] = useState<string | null>(null);
 
   // ── Build a 364-day heatmap from a live dateMap (fully replaces static data) ──
   const buildHeatmapFromMap = (dateMap: Map<string, GitHubContributionDay>): GitHubContributionDay[] => {
@@ -516,7 +515,6 @@ export default function CodingActivitySection({ darkMode: _darkMode }: { darkMod
       };
 
       setGhData(newGhData);
-      setLastSyncedAt(new Date().toLocaleTimeString());
       localStorage.setItem("gh_cached_data_nayanrk261", JSON.stringify(newGhData));
       localStorage.setItem("gh_last_sync_ts", todayStr);
     } catch {}
@@ -674,30 +672,14 @@ export default function CodingActivitySection({ darkMode: _darkMode }: { darkMod
                   </div>
                 </div>
 
-                <div className="flex items-center gap-2 flex-wrap justify-end">
-                  <div className="flex flex-col items-end gap-0.5">
-                    <button
-                      onClick={() => syncGitHub(true)}
-                      disabled={isSyncingGh}
-                      title="Sync real-time GitHub activity"
-                      className="mono text-xs px-2.5 py-1 rounded-lg bg-white/5 hover:bg-emerald-500/20 text-stone-300 hover:text-emerald-400 border border-white/10 hover:border-emerald-500/30 transition-all flex items-center gap-1.5 disabled:opacity-50 cursor-pointer"
-                    >
-                      <RefreshCw className={`w-3.5 h-3.5 ${isSyncingGh ? "animate-spin text-emerald-400" : ""}`} />
-                      <span>{isSyncingGh ? "Syncing..." : "Sync Live"}</span>
-                    </button>
-                    {lastSyncedAt && !isSyncingGh && (
-                      <span className="mono text-[9px] text-stone-500 pr-0.5">
-                        synced {lastSyncedAt}
-                      </span>
-                    )}
-                  </div>
-                  <span className="mono text-[11px] font-semibold px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-300 border border-emerald-500/20 flex items-center gap-1.5">
-                    <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                    {ghData?.total?.lastYear !== undefined
-                      ? `${ghData.total.lastYear} in last year`
-                      : "Live Graph"}
-                  </span>
-                </div>
+                <span className="mono text-[11px] font-semibold px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-300 border border-emerald-500/20 flex items-center gap-1.5">
+                  <span className={`w-2 h-2 rounded-full bg-emerald-400 ${isSyncingGh ? "animate-ping" : "animate-pulse"}`} />
+                  {isSyncingGh
+                    ? "Fetching..."
+                    : ghData?.total?.lastYear !== undefined
+                    ? `${ghData.total.lastYear} contributions`
+                    : "Loading..."}
+                </span>
               </div>
 
               {/* GitHub Heatmap Grid */}
