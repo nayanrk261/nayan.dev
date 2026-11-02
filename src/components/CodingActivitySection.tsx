@@ -403,13 +403,16 @@ function ContributionHeatmap({
 
 export default function CodingActivitySection({ darkMode: _darkMode }: { darkMode?: boolean }) {
 
-  // ── Initialise GitHub data: prefer localStorage cache, fallback to static ──
+  // ── Initialise GitHub data: prefer localStorage cache (only if total looks correct), fallback to static ──
   const initialGhData = useMemo<GitHubApiResponse>(() => {
     try {
       const cached = localStorage.getItem("gh_cached_data_nayanrk261");
       if (cached) {
         const parsed = JSON.parse(cached) as GitHubApiResponse;
-        if (parsed?.contributions?.length) return parsed;
+        // Only trust the cache if the total is plausible (>= 300). Clears any stale 193 cache.
+        if (parsed?.contributions?.length && (parsed?.total?.lastYear ?? 0) >= 300) return parsed;
+        // Bad cache — purge it so syncGitHub starts fresh
+        localStorage.removeItem("gh_cached_data_nayanrk261");
       }
     } catch {}
     return {
@@ -461,7 +464,39 @@ export default function CodingActivitySection({ darkMode: _darkMode }: { darkMod
       const dateMap = new Map<string, GitHubContributionDay>();
       let gotLiveData = false;
 
-      // ── 1. PRIMARY: Own Vercel serverless proxy (no CORS, most reliable) ──
+      // ── 0. BASELINE: Seed map with verified static data so total can only go UP ──
+      Object.entries(REAL_GITHUB_ACTIVE_DAYS).forEach(([dStr, entry]) => {
+        dateMap.set(dStr, { date: dStr, count: entry.count, level: entry.level });
+      });
+
+      // ── 1. PRIMARY: jogruber contributions API (full year, accurate, CORS-friendly) ──
+      try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 8000);
+        const res = await fetch(
+          `https://github-contributions-api.jogruber.de/v4/nayanrk261?y=last`,
+          { signal: controller.signal }
+        );
+        clearTimeout(timeoutId);
+        if (res.ok) {
+          const data = await res.json();
+          if (data?.contributions && Array.isArray(data.contributions) && data.contributions.length > 0) {
+            data.contributions.forEach((c: { date: string; count: number; level: number }) => {
+              if (c.count > 0) {
+                const level = Math.min(4, Math.max(0, c.level)) as 0 | 1 | 2 | 3 | 4;
+                // Take the higher of live vs static (never reduce a known real value)
+                const existing = dateMap.get(c.date);
+                if (!existing || c.count >= existing.count) {
+                  dateMap.set(c.date, { date: c.date, count: c.count, level });
+                }
+              }
+            });
+            gotLiveData = true;
+          }
+        }
+      } catch {}
+
+      // ── 2. SECONDARY: Own Vercel serverless proxy (supplements jogruber) ──
       try {
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 8000);
@@ -475,14 +510,17 @@ export default function CodingActivitySection({ darkMode: _darkMode }: { darkMod
           if (data?.contributions && Array.isArray(data.contributions) && data.contributions.length > 0) {
             data.contributions.forEach((c: { date: string; count: number; level: number }) => {
               const level = Math.min(4, Math.max(0, c.level)) as 0 | 1 | 2 | 3 | 4;
-              dateMap.set(c.date, { date: c.date, count: c.count, level });
+              const existing = dateMap.get(c.date);
+              if (!existing || c.count > existing.count) {
+                dateMap.set(c.date, { date: c.date, count: c.count, level });
+              }
             });
             gotLiveData = true;
           }
         }
       } catch {}
 
-      // ── 2. SECONDARY: GitHub Events API (real-time last 90 events, always works) ──
+      // ── 3. SUPPLEMENTAL: GitHub Events API (recent real-time events) ──
       try {
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 5000);
@@ -503,7 +541,7 @@ export default function CodingActivitySection({ darkMode: _darkMode }: { darkMod
               }
               const existing = dateMap.get(dateStr);
               const currentCount = existing ? existing.count : 0;
-              const newCount = currentCount + commitCount; // accumulate, don't just max
+              const newCount = Math.max(currentCount, commitCount);
               const newLevel: 0 | 1 | 2 | 3 | 4 =
                 newCount >= 10 ? 4 : newCount >= 6 ? 3 : newCount >= 3 ? 2 : 1;
               dateMap.set(dateStr, { date: dateStr, count: newCount, level: newLevel });
@@ -513,13 +551,8 @@ export default function CodingActivitySection({ darkMode: _darkMode }: { darkMod
         }
       } catch {}
 
-      // ── 3. FALLBACK: If both APIs failed, merge static data as baseline ──
       if (!gotLiveData) {
-        Object.entries(REAL_GITHUB_ACTIVE_DAYS).forEach(([dStr, entry]) => {
-          if (!dateMap.has(dStr)) {
-            dateMap.set(dStr, { date: dStr, count: entry.count, level: entry.level });
-          }
-        });
+        // All APIs failed — static baseline already in map, nothing more to do
       }
 
       // Build final 364-day list
