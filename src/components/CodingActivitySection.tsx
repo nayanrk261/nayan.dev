@@ -44,7 +44,7 @@ interface ContributionHeatmapProps {
   formatDate: (dateStr: string) => string;
 }
 
-/* Real LeetCode submission calendar data for @nayank_2616 */
+/* Real LeetCode submission calendar data for @nayank_2616 — updated 2026-11-02 */
 const REAL_LEETCODE_CALENDAR: Record<string, number> = {
   "1766361600": 1, "1766620800": 1, "1767312000": 2, "1767398400": 6, "1767484800": 1, "1767571200": 1,
   "1767657600": 2, "1767830400": 1, "1767916800": 2, "1768608000": 1, "1768694400": 2, "1768780800": 1,
@@ -66,11 +66,18 @@ const REAL_LEETCODE_CALENDAR: Record<string, number> = {
   "1788048000": 1, "1788220800": 1, "1788307200": 2, "1788393600": 1, "1788480000": 1, "1788566400": 2,
   "1788739200": 1, "1788825600": 2, "1788912000": 1, "1788998400": 1, "1789171200": 1, "1789430400": 1,
   "1789516800": 1, "1789689600": 2, "1789776000": 1, "1789862400": 2, "1789948800": 2, "1790035200": 3,
-  "1790121600": 1, "1790208000": 2, "1790294400": 1, "1790380800": 1
+  "1790121600": 1, "1790208000": 2, "1790294400": 1, "1790380800": 1,
+  /* NEW entries from live API — Oct 2026 */
+  "1790467200": 2, "1790553600": 2, "1790640000": 3, "1790726400": 1, "1790812800": 1, "1790899200": 2,
+  "1790985600": 1, "1791072000": 1, "1791158400": 2, "1791590400": 1, "1791763200": 1, "1791849600": 2,
+  "1791936000": 1, "1792022400": 1, "1792108800": 1, "1792195200": 1, "1792281600": 1, "1792368000": 2,
+  "1792454400": 2, "1792627200": 1, "1792713600": 2, "1792800000": 1, "1792972800": 1, "1793059200": 1,
+  "1793145600": 2, "1793232000": 1, "1793404800": 1, "1793491200": 2,
 };
 
-/* Real GitHub active contribution days for @nayanrk261 */
+/* Real GitHub active contribution days for @nayanrk261 — synced from API 2026-11-02, total: 305 */
 const REAL_GITHUB_ACTIVE_DAYS: Record<string, { count: number; level: 0 | 1 | 2 | 3 | 4 }> = {
+  /* Jan–Apr 2026 */
   "2026-01-14": { count: 3, level: 2 },
   "2026-02-03": { count: 1, level: 1 },
   "2026-02-04": { count: 1, level: 1 },
@@ -78,6 +85,7 @@ const REAL_GITHUB_ACTIVE_DAYS: Record<string, { count: number; level: 0 | 1 | 2 
   "2026-02-24": { count: 1, level: 1 },
   "2026-03-20": { count: 1, level: 1 },
   "2026-04-10": { count: 1, level: 1 },
+  /* May 2026 */
   "2026-05-02": { count: 1, level: 1 },
   "2026-05-19": { count: 1, level: 1 },
   "2026-05-22": { count: 1, level: 1 },
@@ -85,6 +93,7 @@ const REAL_GITHUB_ACTIVE_DAYS: Record<string, { count: number; level: 0 | 1 | 2 
   "2026-05-26": { count: 1, level: 1 },
   "2026-05-28": { count: 2, level: 1 },
   "2026-05-30": { count: 1, level: 1 },
+  /* Jun 2026 */
   "2026-06-01": { count: 4, level: 2 },
   "2026-06-03": { count: 1, level: 1 },
   "2026-06-05": { count: 1, level: 1 },
@@ -97,6 +106,7 @@ const REAL_GITHUB_ACTIVE_DAYS: Record<string, { count: number; level: 0 | 1 | 2 
   "2026-06-18": { count: 10, level: 4 },
   "2026-06-19": { count: 2, level: 1 },
   "2026-06-20": { count: 5, level: 2 },
+  /* Jul 2026 */
   "2026-07-08": { count: 3, level: 2 },
   "2026-07-09": { count: 8, level: 3 },
   "2026-07-11": { count: 2, level: 1 },
@@ -114,6 +124,7 @@ const REAL_GITHUB_ACTIVE_DAYS: Record<string, { count: number; level: 0 | 1 | 2 
   "2026-07-29": { count: 2, level: 1 },
   "2026-07-30": { count: 2, level: 1 },
   "2026-07-31": { count: 1, level: 1 },
+  /* Aug 2026 */
   "2026-08-01": { count: 3, level: 2 },
   "2026-08-02": { count: 4, level: 2 },
   "2026-08-03": { count: 1, level: 1 },
@@ -137,6 +148,7 @@ const REAL_GITHUB_ACTIVE_DAYS: Record<string, { count: number; level: 0 | 1 | 2 
   "2026-08-29": { count: 11, level: 4 },
   "2026-08-30": { count: 11, level: 4 },
   "2026-08-31": { count: 1, level: 1 },
+  /* Sep 2026 */
   "2026-09-01": { count: 7, level: 3 },
   "2026-09-02": { count: 1, level: 1 },
   "2026-09-03": { count: 1, level: 1 },
@@ -158,25 +170,29 @@ const REAL_GITHUB_ACTIVE_DAYS: Record<string, { count: number; level: 0 | 1 | 2 
   "2026-09-23": { count: 2, level: 1 },
   "2026-09-25": { count: 2, level: 1 },
   "2026-09-26": { count: 1, level: 1 },
-  "2026-09-27": { count: 1, level: 1 },
+  "2026-09-27": { count: 8, level: 3 },
   "2026-09-28": { count: 1, level: 1 },
-  "2026-09-29": { count: 1, level: 1 },
-  "2026-09-30": { count: 1, level: 1 },
-  "2026-10-01": { count: 2, level: 1 },
+  "2026-09-29": { count: 2, level: 1 },
+  "2026-09-30": { count: 2, level: 1 },
+  /* Oct 2026 */
+  "2026-10-01": { count: 5, level: 2 },
   "2026-10-02": { count: 1, level: 1 },
-  "2026-10-03": { count: 2, level: 1 },
-  "2026-10-05": { count: 1, level: 1 },
-  "2026-10-07": { count: 3, level: 2 },
-  "2026-10-08": { count: 1, level: 1 },
-  "2026-10-10": { count: 2, level: 1 },
-  "2026-10-12": { count: 4, level: 2 },
-  "2026-10-13": { count: 1, level: 1 },
-  "2026-10-14": { count: 2, level: 1 },
-  "2026-10-16": { count: 1, level: 1 },
-  "2026-10-18": { count: 3, level: 2 },
+  "2026-10-03": { count: 5, level: 2 },
+  "2026-10-04": { count: 3, level: 2 },
+  "2026-10-10": { count: 3, level: 2 },
+  "2026-10-12": { count: 2, level: 1 },
+  "2026-10-13": { count: 2, level: 1 },
+  "2026-10-14": { count: 1, level: 1 },
+  "2026-10-16": { count: 2, level: 1 },
+  "2026-10-17": { count: 1, level: 1 },
   "2026-10-19": { count: 1, level: 1 },
-  "2026-10-20": { count: 2, level: 1 },
-  "2026-10-21": { count: 1, level: 1 },
+  "2026-10-21": { count: 6, level: 3 },
+  "2026-10-23": { count: 2, level: 1 },
+  "2026-10-24": { count: 2, level: 1 },
+  "2026-10-25": { count: 1, level: 1 },
+  "2026-10-31": { count: 1, level: 1 },
+  /* Nov 2026 */
+  "2026-11-02": { count: 6, level: 3 },
 };
 
 /* Helper to build 364 days array for GitHub from active days object */
@@ -397,19 +413,19 @@ export default function CodingActivitySection({ darkMode: _darkMode }: { darkMod
       }
     } catch {}
     return {
-      total: { lastYear: 245 },
+      total: { lastYear: 305 },
       contributions: build364DaysGitHubHeatmap(REAL_GITHUB_ACTIVE_DAYS),
     };
   }, []);
 
   const [ghData, setGhData] = useState<GitHubApiResponse>(initialGhData);
 
-  // LeetCode state - Pre-populated with real LeetCode stats & 124 real submission dates
+  // LeetCode state - Pre-populated with real LeetCode stats (updated 2026-11-02)
   const [lcData, setLcData] = useState<LeetCodeApiResponse>({
-    totalSolved: 85,
-    easySolved: 36,
-    mediumSolved: 45,
-    hardSolved: 4,
+    totalSolved: 103,
+    easySolved: 49,
+    mediumSolved: 49,
+    hardSolved: 5,
   });
   const [lcHeatmap, setLcHeatmap] = useState<HeatmapDay[]>(() => build364DaysHeatmap(REAL_LEETCODE_CALENDAR));
 
@@ -612,10 +628,10 @@ export default function CodingActivitySection({ darkMode: _darkMode }: { darkMod
     }
   };
 
-  const totalSolvedCount = lcData.totalSolved || 85;
-  const easyCount = lcData.easySolved || 36;
-  const mediumCount = lcData.mediumSolved || 45;
-  const hardCount = lcData.hardSolved || 4;
+  const totalSolvedCount = lcData.totalSolved || 103;
+  const easyCount = lcData.easySolved || 49;
+  const mediumCount = lcData.mediumSolved || 49;
+  const hardCount = lcData.hardSolved || 5;
 
   return (
     <section id="activity" className="relative px-6 py-20 overflow-hidden scroll-mt-20">
