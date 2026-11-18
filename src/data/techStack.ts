@@ -11,7 +11,6 @@ import nodejsIcon from "@/assets/logos/tech_stack/nodejs.svg";
 import expressIcon from "@/assets/logos/tech_stack/express.svg";
 
 import mysqlIcon from "@/assets/logos/tech_stack/mysql.svg";
-import supabaseIcon from "@/assets/logos/tech_stack/supabase.svg";
 import mongodbIcon from "@/assets/logos/tech_stack/mongodb.svg";
 
 import gitIcon from "@/assets/logos/tech_stack/git.svg";
@@ -19,12 +18,9 @@ import githubDarkIcon from "@/assets/logos/tech_stack/github-dark.svg";
 import githubWhiteIcon from "@/assets/logos/tech_stack/github-white.svg";
 import vercelDarkIcon from "@/assets/logos/tech_stack/vercel-dark.svg";
 import vercelWhiteIcon from "@/assets/logos/tech_stack/vercel-white.svg";
-import figmaIcon from "@/assets/logos/tech_stack/figma.svg";
 import canvaIcon from "@/assets/logos/tech_stack/canva.svg";
 import vscodeIcon from "@/assets/logos/tech_stack/vscode.svg";
-import androidstudioIcon from "@/assets/logos/tech_stack/androidstudio.svg";
 import railwayIcon from "@/assets/logos/tech_stack/railway.svg";
-import dockerIcon from "@/assets/logos/tech_stack/docker.svg";
 import postmanIcon from "@/assets/logos/tech_stack/postman.svg";
 
 export function getTechCategories(darkMode: boolean): TechCategory[] {
@@ -51,7 +47,6 @@ export function getTechCategories(darkMode: boolean): TechCategory[] {
       items: [
         { name: "MySQL", icon: mysqlIcon },
         { name: "MongoDB", icon: mongodbIcon },
-        { name: "Supabase", icon: supabaseIcon },
       ],
     },
     {
@@ -60,12 +55,9 @@ export function getTechCategories(darkMode: boolean): TechCategory[] {
         { name: "Git", icon: gitIcon },
         { name: "GitHub", icon: githubIcon },
         { name: "Vercel", icon: vercelIcon },
-        { name: "Figma", icon: figmaIcon },
         { name: "Canva", icon: canvaIcon },
         { name: "VS Code", icon: vscodeIcon },
-        { name: "Android Studio", icon: androidstudioIcon },
         { name: "Railway", icon: railwayIcon },
-        { name: "Docker", icon: dockerIcon },
         { name: "Postman", icon: postmanIcon },
       ],
     },
