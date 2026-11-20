@@ -16,7 +16,7 @@ const VIBECHECK_PROJECT: Project = {
     "VibeCheck is an evidence-first security auditing platform designed to identify vulnerabilities in AI-generated and vibe-coded applications. It scans codebases for insecure coding patterns, security misconfigurations, and potential vulnerabilities using deterministic analysis, with multi-language technology detection, comment-aware pattern matching, file-level evidence extraction, and actionable security reports.",
   tags: ["React", "Node.js", "Express.js", "MongoDB", "JavaScript", "Tailwind CSS"],
   githubUrl: "https://github.com/nayanrk261/VibeCheck",
-  liveUrl: "https://vibecheck.app",
+  liveUrl: "https://vibe-check-navy.vercel.app",
 };
 
 const LEXLOCAL_PROJECT: Project = {
